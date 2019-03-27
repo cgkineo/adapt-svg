@@ -1,0 +1,16 @@
+{
+  "name": "adapt-svg",
+  "version": "1.0.0",
+  "framework": ">=2",
+  "homepage": "",
+  "issues": "",
+  "displayName" : "SVG",
+  "component" : "svg",
+  "description": "Component that renders SVGs, which can be static or animated, in the content area.",
+  "main": "/js/adapt-svg.js",
+  "keywords": [
+    "adapt-plugin",
+    "adapt-component"
+  ],
+  "license": "GPLv3"
+}

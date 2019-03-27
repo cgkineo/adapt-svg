@@ -1,0 +1,17 @@
+{
+  "_id": "c-100",
+  "_parentId": "b-100",
+  "_type": "component",
+  "_component": "svg",
+  "_classes": "",
+  "_layout": "full",
+  "title": "SVG",
+  "displayTitle": "SVG",
+  "body": "",
+  "instruction": "",
+  "_svg": {
+    "_path": "course/en/svgs/data.json",
+    "_autoplay": true,
+    "_loop": true
+  }
+}
