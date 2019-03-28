@@ -19,7 +19,7 @@ define([
     postRender: function() {
       this.setUpAnimation();
 
-      window.anim = this.animation;
+      // window.anim = this.animation;
 
       this.animation.addEventListener("data_ready", this.onReady.bind(this));
     },
@@ -32,8 +32,8 @@ define([
         renderer: 'svg',
         loop: config._loop,
         autoplay: config._autoplay,
-        path: config._path,
-        assetsPath: 'course/en/svgs/assets'
+        path: config._path + '/data.json',
+        assetsPath: config._path + '/images/'
       });
     },
 
