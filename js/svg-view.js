@@ -1,7 +1,7 @@
 define([
   'core/js/adapt',
   'core/js/views/componentView',
-  'libraries/bodymovin'
+  'libraries/bodymovin.min'
 ], function(Adapt, ComponentView, BodyMovin) {
 
   var SvgView = ComponentView.extend({
