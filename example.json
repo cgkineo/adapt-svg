@@ -10,7 +10,8 @@
   "body": "",
   "instruction": "",
   "_svg": {
-    "_path": "course/en/svgs",
+    "_renderer": "svg",
+    "_path": "course/en/images/c-100",
     "_autoplay": true,
     "_loop": true
   }

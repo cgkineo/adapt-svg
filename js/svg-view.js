@@ -29,11 +29,10 @@ define([
 
       this.animation = BodyMovin.loadAnimation({
         container: this.$('.component-widget')[0],
-        renderer: 'svg',
+        renderer: config._renderer,
         loop: config._loop,
         autoplay: config._autoplay,
-        path: config._path + '/data.json',
-        assetsPath: config._path + '/images/'
+        path: config._path + '/data.json'
       });
     },
 

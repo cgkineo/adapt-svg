@@ -10,6 +10,8 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 **\_svg** (object): The SVG that constitutes the component. It contains values for **\_path**, **\_autoplay**, and **\_loop**.
 
+>**\_renderer** (String): Sets which renderer to use. Acceptable values are `svg` `canvas` and `html` - default should be `svg` when using vector based animation and `canvas` if animation is comprised of just images.
+
 >**\_path** (String): Set the path to the SVG export folder. Folder should contain the SVG *data.json* file plus any associated static images in an *images* folder (if applicable).
 
 >**\_autoplay** (Boolean): Defines whether the SVG animation autoplays when inview. At present, there is no way to manually trigger an SVG so value should always be set to *true*.
@@ -24,6 +26,7 @@ None
 
 * Not yet been stress tested
 * Not AAT compatible
+* 
 
 ----------------------------
 **Version number:**  1.0.0  
