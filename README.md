@@ -2,6 +2,8 @@
 
 **Adapt SVG** is a *presentational component* that renders SVGs, which can be static or animated, in the content area. When offscreen, the animation does not play and is reset to its starting frame.
 
+Uses v5.5.7 of Lottie.
+
 ## Settings Overview
 
 The attributes listed below are used in *components.json* to configure **Adapt SVG**, and are properly formatted as JSON in [*example.json*](https://github.com/cgkineo/adapt-svg/blob/master/example.json).
@@ -26,15 +28,14 @@ None
 
 * Not yet been stress tested
 * Not AAT compatible
-* 
 
 ----------------------------
-**Version number:**  1.0.0  
-**Framework versions:**  >=2.0.0  
-**Author / maintainer:** Kirsty Hames / Kineo  
-**Accessibility support:** None  
-**RTL support:** Yes  
-**Cross-platform coverage:** Evergreen + IE11  
+**Version number:**  1.1.0
+**Framework versions:**  >=2.0.0
+**Author / maintainer:** Kirsty Hames / Kineo
+**Accessibility support:** None
+**RTL support:** Yes
+**Cross-platform coverage:** Evergreen + IE11
 
 ----------------------------
 

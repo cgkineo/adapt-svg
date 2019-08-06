@@ -1,8 +1,8 @@
 define([
   'core/js/adapt',
   'core/js/views/componentView',
-  'libraries/bodymovin.min'
-], function(Adapt, ComponentView, BodyMovin) {
+  'libraries/lottie.min'
+], function(Adapt, ComponentView, Lottie) {
 
   var SvgView = ComponentView.extend({
 
@@ -27,7 +27,7 @@ define([
     setUpAnimation: function() {
       var config = this.model.get('_svg');
 
-      this.animation = BodyMovin.loadAnimation({
+      this.animation = Lottie.loadAnimation({
         container: this.$('.component-widget')[0],
         renderer: config._renderer,
         loop: config._loop,
