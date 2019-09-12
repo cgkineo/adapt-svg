@@ -117,7 +117,11 @@ define([
     },
 
     remove: function() {
-      this.animation.destroy();
+      this.animation.stop();
+
+      _.defer(function() {
+        this.animation.destroy();
+      }.bind(this));
 
       // Remove any 'inview' listener attached.
       this.$('.component-widget').off('inview');
