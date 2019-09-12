@@ -28,7 +28,7 @@ define([
       var config = this.model.get('_svg');
 
       this.animation = Lottie.loadAnimation({
-        container: this.$('.component-widget')[0],
+        container: this.$('.component__widget')[0],
         renderer: config._renderer,
         loop: config._loop,
         autoplay: config._autoplay,
@@ -40,7 +40,7 @@ define([
       this.setReadyStatus();
 
       // Bind 'inview' once the images are ready.
-      this.$('.component-widget').on('inview', this.inview.bind(this));
+      this.$('.component__widget').on('inview', this.inview.bind(this));
       this.setOnScreen(true);
     },
 
@@ -64,7 +64,7 @@ define([
         }
 
         if (this._isVisibleTop && this._isVisibleBottom) {
-          this.$('.component-widget').off('inview');
+          this.$('.component__widget').off('inview');
           this.setCompletionStatus();
         }
       }
@@ -76,13 +76,13 @@ define([
 
       if (bool) {
         // If i'm not in the right state and I should be on
-        this.$('.component-widget').on('onscreen', this.onScreenCallback);
+        this.$('.component__widget').on('onscreen', this.onScreenCallback);
         this._isListening = true;
         return;
       }
 
       // If i'm not in the right state and should be off
-      this.$('.component-widget').off('onscreen', this.onScreenCallback);
+      this.$('.component__widget').off('onscreen', this.onScreenCallback);
       this._isListening = false;
     },
 
@@ -124,7 +124,7 @@ define([
       }.bind(this));
 
       // Remove any 'inview' listener attached.
-      this.$('.component-widget').off('inview');
+      this.$('.component__widget').off('inview');
 
       this.setOnScreen(false);
       this.setAnimate(false);
