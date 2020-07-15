@@ -30,8 +30,8 @@ None
 * Not AAT compatible
 
 ----------------------------
-**Version number:**  1.1.1   
-**Framework versions:**  >=2.0.0   
+**Version number:**  2.0.0   
+**Framework versions:**  >=5   
 **Author / maintainer:** Kirsty Hames / Kineo   
 **Accessibility support:** None   
 **RTL support:** Yes   
