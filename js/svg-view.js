@@ -8,7 +8,7 @@ define([
 
     initialize: function() {
       _.bindAll(this, "onScreenCallback");
-
+      this.listenTo(Adapt, 'device:resize', this.onResize);
       ComponentView.prototype.initialize.apply(this, arguments);
     },
 
@@ -18,9 +18,7 @@ define([
 
     postRender: function() {
       this.setUpAnimation();
-
       // window.anim = this.animation;
-
       this.animation.addEventListener("data_ready", this.onReady.bind(this));
     },
 
@@ -28,7 +26,7 @@ define([
       var config = this.model.get('_svg');
 
       this.animation = Lottie.loadAnimation({
-        container: this.$('.component__widget')[0],
+        container: this.$('.svg__widget-aligner')[0],
         renderer: config._renderer,
         loop: config._loop,
         autoplay: config._autoplay,
@@ -37,11 +35,34 @@ define([
     },
 
     onReady: function() {
+      this.onResize();
       this.setReadyStatus();
 
       // Bind 'inview' once the images are ready.
       this.$('.component__widget').on('inview', this.inview.bind(this));
       this.setOnScreen(true);
+    },
+
+    onResize: function() {
+      const $svg = this.$('svg');
+      const $aligner = this.$('.svg__widget-aligner');
+      this.dimensions = this.dimensions || {
+        height: parseInt($svg.attr('height')),
+        width: parseInt($svg.attr('width')),
+      };
+      const ratio = this.dimensions.height / this.dimensions.width;
+      const width = this.$el.width();
+      const height = width * ratio;
+      const scale = (1 / this.dimensions.width) * width;
+      $svg.css({
+        width: this.dimensions.width,
+        height: this.dimensions.height,
+        transform: `scale(${scale})`,
+        transformOrigin: 'top left'
+      });
+      $aligner.css({
+        height: height
+      });
     },
 
     checkIfResetOnRevisit: function() {
