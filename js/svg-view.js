@@ -26,34 +26,22 @@ define([
       var config = this.model.get('_svg');
       var path = config._path + '/data.json';
 
-      if(this.doesFileExist(path)) {
+      if (!this.doesFileExist(path)) { return }
 
-        this.animation = Lottie.loadAnimation({
-          container: this.$('.svg__widget-aligner')[0],
-          renderer: config._renderer,
-          loop: config._loop,
-          autoplay: config._autoplay,
-          path: path
-        });
-
-        return true;
-
-      } else {
-        console.error("ERROR! adapt-svg: " + path + " not found");
-        return false;
-      }
+      this.animation = Lottie.loadAnimation({
+        container: this.$('.svg__widget-aligner')[0],
+        renderer: config._renderer,
+        loop: config._loop,
+        autoplay: config._autoplay,
+        path: path
+      });
     },
 
-    doesFileExist: function(urlToFile) {
+    doesFileExist: function(url) {
         var xhr = new XMLHttpRequest();
-        xhr.open('HEAD', urlToFile, false);
+        xhr.open('HEAD', url, false);
         xhr.send();
-         
-        if (xhr.status == "404") {
-            return false;
-        } else {
-            return true;
-        }
+        return (xhr.status !== "404");
     },
 
     onReady: function() {
