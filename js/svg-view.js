@@ -19,6 +19,7 @@ define([
     postRender: function() {
       this.setUpAnimation();
       // window.anim = this.animation;
+      this.animation.addEventListener("data_failed", this.onFail.bind(this));
       this.animation.addEventListener("data_ready", this.onReady.bind(this));
     },
 
@@ -32,6 +33,11 @@ define([
         autoplay: config._autoplay,
         path: config._path + '/data.json'
       });
+    },
+
+    onFail: function() {
+      console.error('adapt-svg: There was a problem loading SVG data for ' + this.model.get('_id'));
+      this.animation.removeEventListener("data_failed", this.onReady.bind(this));
     },
 
     onReady: function() {
