@@ -37,7 +37,7 @@ define([
 
     onFail: function() {
       console.error('adapt-svg: There was a problem loading SVG data for ' + this.model.get('_id'));
-      this.animation.removeEventListener("data_failed", this.onReady.bind(this));
+      this.animation.removeEventListener('data_failed', this.onReady.bind(this));
     },
 
     onReady: function() {
