@@ -6,25 +6,18 @@ define([
 
   var SvgView = ComponentView.extend({
 
-    initialize: function() {
-      _.bindAll(this, "onScreenCallback");
-      this.listenTo(Adapt, 'device:resize', this.onResize);
-      ComponentView.prototype.initialize.apply(this, arguments);
-    },
-
     preRender: function() {
+      _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady');
+      this.listenTo(Adapt, 'device:resize', this.onResize);
       this.checkIfResetOnRevisit();
     },
 
     postRender: function() {
       this.setUpAnimation();
-      // window.anim = this.animation;
-      this.animation.addEventListener("data_failed", this.onFail.bind(this));
-      this.animation.addEventListener("data_ready", this.onReady.bind(this));
     },
 
     setUpAnimation: function() {
-      var config = this.model.get('_svg');
+      const config = this.model.get('_svg');
 
       this.animation = Lottie.loadAnimation({
         container: this.$('.svg__widget-aligner')[0],
@@ -33,20 +26,27 @@ define([
         autoplay: config._autoplay,
         path: config._path + '/data.json'
       });
+      this.animation.addEventListener('data_ready', this.onReady);
+      this.animation.addEventListener('data_failed', this.onFail);
     },
 
     onFail: function() {
       Adapt.log.error(`adapt-svg: There was a problem loading SVG data for ${this.model.get('_id')}`);
-      this.animation.removeEventListener('data_failed', this.onReady.bind(this));
+      this.animation.removeEventListener('data_ready', this.onReady);
+      this.animation.removeEventListener('data_failed', this.onFail);
     },
 
     onReady: function() {
+      this.animation.removeEventListener('data_ready', this.onReady);
+      this.animation.removeEventListener('data_failed', this.onFail);
+
       this.onResize();
       this.setReadyStatus();
+      this.setupInviewCompletion('.component__widget');
 
-      // Bind 'inview' once the images are ready.
-      this.$('.component__widget').on('inview', this.inview.bind(this));
-      this.setOnScreen(true);
+      if (this.animation.autoplay) return;
+
+      this.$('.component__widget').on('onscreen.animate', this.checkIfOnScreen);
     },
 
     onResize: function() {
@@ -79,82 +79,21 @@ define([
       }
     },
 
-    inview: function(event, visible, visiblePartX, visiblePartY) {
-      if (visible) {
-        if (visiblePartY === 'top') {
-          this._isVisibleTop = true;
-        } else if (visiblePartY === 'bottom') {
-          this._isVisibleBottom = true;
-        } else {
-          this._isVisibleTop = true;
-          this._isVisibleBottom = true;
-        }
-
-        if (this._isVisibleTop && this._isVisibleBottom) {
-          this.$('.component__widget').off('inview');
-          this.setCompletionStatus();
-        }
-      }
-    },
-
-    setOnScreen: function(bool) {
-      // If i'm already in the right state, return
-      if (bool === this._isListening) return;
-
-      if (bool) {
-        // If i'm not in the right state and I should be on
-        this.$('.component__widget').on('onscreen', this.onScreenCallback);
-        this._isListening = true;
-        return;
-      }
-
-      // If i'm not in the right state and should be off
-      this.$('.component__widget').off('onscreen', this.onScreenCallback);
-      this._isListening = false;
-    },
-
-    onScreenCallback: function(event, measurement) {
-      var isTopJustOffScreen = (measurement.percentFromTop < 150 && measurement.percentFromTop > 50);
-      var isBottomJustOffScreen = (measurement.percentFromBottom < 150 && measurement.percentFromBottom > 50);
-
-      if (measurement.onscreen === true || isTopJustOffScreen || isBottomJustOffScreen) {
-        // Element is now visible in the viewport
-        // Turn on animations
-        this.setAnimate(true);
-        return;
-      } else {
-        // Element has gone out of viewport
-        // Turn off animations
-        this.setAnimate(false);
-      }
-    },
-
-     // Start / stop animation
-    setAnimate: function(bool) {
-      if (bool === this._isAnimating) return;
-
-      if (bool) {
+    checkIfOnScreen: function (event, measurements) {
+      if (measurements.percentInviewVertical > 0) {
         this.animation.play();
-        this._isAnimating = true;
         return;
       }
 
       this.animation.stop();
-      this._isAnimating = false;
     },
 
     remove: function() {
       this.animation.stop();
 
-      _.defer(function() {
-        this.animation.destroy();
-      }.bind(this));
+      this.animation.destroy();
 
-      // Remove any 'inview' listener attached.
-      this.$('.component__widget').off('inview');
-
-      this.setOnScreen(false);
-      this.setAnimate(false);
+      this.$('.component__widget').off('onscreen.animate');
 
       ComponentView.prototype.remove.apply(this, arguments);
     }
