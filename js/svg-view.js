@@ -22,8 +22,8 @@ define([
       this.animation = Lottie.loadAnimation({
         container: this.$('.svg__widget-aligner')[0],
         renderer: config._renderer,
-        loop: config._loop,
-        autoplay: config._autoplay,
+        loop: config._loop === -1 ? true : config._loop, // see https://github.com/airbnb/lottie-web/wiki/loadAnimation-options#loop-default-is-true
+        autoplay: false,// we'll use checkIfOnScreen to control when playback starts
         path: config._path + '/data.json'
       });
       this.animation.addEventListener('data_ready', this.onReady);
@@ -43,8 +43,6 @@ define([
       this.onResize();
       this.setReadyStatus();
       this.setupInviewCompletion('.component__widget');
-
-      if (this.animation.autoplay) return;
 
       this.$('.component__widget').on('onscreen.animate', this.checkIfOnScreen);
     },
@@ -80,12 +78,13 @@ define([
     },
 
     checkIfOnScreen: function (event, measurements) {
-      if (measurements.percentInviewVertical > 0) {
+      const percentage = this.model.get('_svg')._percentInviewVertical || 1;
+      if (measurements.percentInviewVertical >= percentage) {
         this.animation.play();
         return;
       }
 
-      this.animation.stop();
+      this.animation.pause();
     },
 
     remove: function() {

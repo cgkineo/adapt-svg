@@ -12,13 +12,13 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 **\_svg** (object): The SVG that constitutes the component. It contains values for **\_path**, **\_autoplay**, and **\_loop**.
 
->**\_renderer** (String): Sets which renderer to use. Acceptable values are `svg` `canvas` and `html` - default should be `svg` when using vector based animation and `canvas` if animation is comprised of just images.
+>**\_renderer** (String): Sets which renderer to use. Acceptable values are `svg` `canvas` and `html` - default should be `svg` when using vector based animation and `canvas` if animation is comprised of just images. Defaults to `"svg"`.
 
 >**\_path** (String): Set the path to the SVG export folder. Folder should contain the SVG *data.json* file plus any associated static images in an *images* folder (if applicable).
 
->**\_autoplay** (Boolean): Defines whether the SVG animation autoplays when inview. At present, there is no way to manually trigger an SVG so value should always be set to *true*.
+>**\_loop** (Number): Controls how many times the animation should loop. To set an infinite loop, use a value of `-1`. Defaults to `0` (don't loop).
 
->**\_loop** (Boolean / Number): Defines whether the SVG animation loops, or not, and the number of loops. For infinite loops, set value to *true*. For a definitive number of loops, set value equal to number of loops required.
+>**\_percentInviewVertical** (Number) What percentage of the SVG container should be on-screen before the animation is triggered. Defaults to `1`.
 
 ### Accessibility
 
