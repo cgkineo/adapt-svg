@@ -12,7 +12,7 @@
         "_svg": {
             "_renderer": "svg",
             "_path": "course/en/images/c-100",
-            "_autoplay": true,
-            "_loop": true
+            "_loop": 0,
+            "_percentInviewVertical": 1
         }
     }
