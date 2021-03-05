@@ -4,55 +4,72 @@ define([
   'libraries/lottie.min'
 ], function(Adapt, ComponentView, Lottie) {
 
-  var SvgView = ComponentView.extend({
+  const SvgView = ComponentView.extend({
+
+    events: {
+      'click .js-svg-play-pause': 'onPlayPauseClick'
+    },
 
     preRender: function() {
-      _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady');
+      this.isPaused = null;
+      this.isInteracted = false;
+      _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady', 'onReducedMotionChange');
+      this.update = _.throttle(this.update.bind(this), 17);
+      this.isOnScreen = false;
       this.listenTo(Adapt, 'device:resize', this.onResize);
       this.checkIfResetOnRevisit();
     },
 
     postRender: function() {
       this.setUpAnimation();
+      if (this.model.get('_setCompletionOn') === 'inview') {
+        this.setupInviewCompletion();
+      }
     },
 
     setUpAnimation: function() {
-      const config = this.model.get('_svg');
-
+      const animation = this.model.get('_animation');
+      const src = animation._src;
+      const loop = animation._loops;
+      const isSingleFile = /\.json/.test(src);
       this.animation = Lottie.loadAnimation({
         container: this.$('.svg__widget-aligner')[0],
-        renderer: config._renderer,
-        loop: config._loop === -1 ? true : config._loop, // see https://github.com/airbnb/lottie-web/wiki/loadAnimation-options#loop-default-is-true
-        autoplay: false,// we'll use checkIfOnScreen to control when playback starts
-        path: config._path + '/data.json'
+        renderer: animation._renderer || 'svg',
+        loop: loop === -1 ? true : loop, // see https://github.com/airbnb/lottie-web/wiki/loadAnimation-options#loop-default-is-true
+        autoplay: false, // we'll use checkIfOnScreen to control when playback starts
+        path: isSingleFile ? src : src + '/data.json'
       });
       this.animation.addEventListener('data_ready', this.onReady);
       this.animation.addEventListener('data_failed', this.onFail);
+      this.animation.addEventListener('complete', this.update);
+      this.animation.addEventListener('loopComplete', this.update);
+      this.animation.addEventListener('enterFrame', this.update);
     },
 
     onFail: function() {
+      this.setCompletionStatus();
+      this.$el.addClass('is-svg-fallback');
       Adapt.log.error(`adapt-svg: There was a problem loading SVG data for ${this.model.get('_id')}`);
-      this.animation.removeEventListener('data_ready', this.onReady);
-      this.animation.removeEventListener('data_failed', this.onFail);
+      this.onReady();
     },
 
     onReady: function() {
-      this.animation.removeEventListener('data_ready', this.onReady);
-      this.animation.removeEventListener('data_failed', this.onFail);
-
-      this.onResize();
-      this.setReadyStatus();
-      this.setupInviewCompletion('.component__widget');
-
-      this.$('.component__widget').on('onscreen.animate', this.checkIfOnScreen);
+      this.$el.imageready(function() {
+        this.onResize();
+        this.setReadyStatus();
+        this.$('.component__widget').on('onscreen.animate', this.checkIfOnScreen);
+        this.setUpReducedMotion();
+        this.update();
+      }.bind(this));
     },
 
     onResize: function() {
-      const $svg = this.$('svg');
+      if (this.model.get('_animation')._renderer !== 'svg') return;
+      const $svg = this.$('.svg__widget-aligner svg');
       const $aligner = this.$('.svg__widget-aligner');
       this.dimensions = this.dimensions || {
         height: parseInt($svg.attr('height')),
-        width: parseInt($svg.attr('width')),
+        width: parseInt($svg.attr('width'))
       };
       const ratio = this.dimensions.height / this.dimensions.width;
       const width = this.$el.width();
@@ -69,31 +86,111 @@ define([
       });
     },
 
-    checkIfResetOnRevisit: function() {
-      var isResetOnRevisit = this.model.get('_isResetOnRevisit');
+    setUpReducedMotion: function() {
+      if (!window.matchMedia) return;
+      this._reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (!this._reducedMotionQuery || !this._reducedMotionQuery.addEventListener) return;
+      this._reducedMotionQuery.addEventListener('change', this.onReducedMotionChange);
+      this.model.set('_originalAutoplay', this.model.get('_animation')._autoPlay);
+      this.onReducedMotionChange();
+    },
 
-      if (isResetOnRevisit) {
-        this.model.reset(isResetOnRevisit);
+    onReducedMotionChange: function() {
+      if (!this.animation) return;
+      const isReducedMotion = (this._reducedMotionQuery && this._reducedMotionQuery.matches);
+      const animation = this.model.get('_animation');
+      if (isReducedMotion) {
+        animation._autoPlay = false;
+        this.model.set('_animation', animation);
+        this.animation.goToAndStop(this.animation.firstFrame + this.animation.totalFrames - 1, true);
+        this.update();
+        return;
       }
+      animation._autoPlay = this.model.get('_originalAutoplay');
+      this.model.set('_animation', animation);
+      const shouldAutoPlay = (!this.shouldCheckIfOnScreen() || this.isOnScreen);
+      this.animation[shouldAutoPlay ? 'goToAndPlay' : 'goToAndStop'](this.animation.firstFrame, true);
+      this.update();
+    },
+
+    shouldCheckIfOnScreen: function() {
+      return (this.model.get('_animation')._onScreenPercentInviewVertical > 0);
+    },
+
+    checkIfResetOnRevisit: function() {
+      const isResetOnRevisit = this.model.get('_isResetOnRevisit');
+      if (!isResetOnRevisit) return;
+      this.model.reset(isResetOnRevisit);
     },
 
     checkIfOnScreen: function (event, measurements) {
-      const percentage = this.model.get('_svg')._percentInviewVertical || 1;
-      if (measurements.percentInviewVertical >= percentage) {
+      if (!this.animation || !this.shouldCheckIfOnScreen()) return;
+      const animation = this.model.get('_animation');
+      const percentage = animation._onScreenPercentInviewVertical;
+      this.isOnScreen = (measurements.percentInviewVertical >= percentage);
+      if (this.isOnScreen) {
+        if (!animation._autoPlay || this.isInteracted) return;
         this.animation.play();
+        this.update();
         return;
       }
+      if (animation._offScreenPause) {
+        this.animation.pause();
+        this.update();
+      }
+      if (animation._offScreenRewind) {
+        this.animation.goToAndStop(this.animation.firstFrame, true);
+        this.update();
+      }
+    },
 
-      this.animation.pause();
+    onPlayPauseClick: function(event) {
+      this.isInteracted = true;
+      event.preventDefault();
+      if (!this.animation) return;
+      const isPaused = this.animation.isPaused;
+      const isFinished = (this.animation.currentFrame === this.animation.totalFrames - 1);
+      if (isPaused && isFinished) this.animation.goToAndPlay(0);
+      else if (isPaused) this.animation.play();
+      else {
+        this.animation.pause();
+        if (this.model.get('_animation')._onPauseRewind) {
+          this.animation.goToAndStop(0);
+        }
+      }
+      this.update();
+    },
+
+    update: function() {
+      if (!this.shouldUpdate) return;
+      const $button = this.$('.svg__playpause');
+      const isFinished = (this.animation.currentFrame === this.animation.totalFrames - 1);
+      this.isPaused = (this.animation.isPaused || isFinished);
+      const setCompletionOn = this.model.get('_setCompletionOn');
+      switch (setCompletionOn) {
+        case 'inview':
+          break;
+        case 'played':
+          !this.isPaused && this.setCompletionStatus();
+          break;
+        case 'finished':
+        default:
+          (isFinished || this.animation._completedLoop) && this.setCompletionStatus();
+          break;
+      }
+      this.$el.toggleClass('is-svg-playing', !this.isPaused);
+      this.$el.toggleClass('is-svg-paused', this.isPaused);
+      $button.attr('aria-label', this.isPaused ? 'Play' : 'Pause');
+    },
+
+    shouldUpdate() {
+      return (this.isPaused !== this.animation.isPaused);
     },
 
     remove: function() {
       this.animation.stop();
-
       this.animation.destroy();
-
       this.$('.component__widget').off('onscreen.animate');
-
       ComponentView.prototype.remove.apply(this, arguments);
     }
 

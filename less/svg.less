@@ -2,4 +2,55 @@
   &__widget-aligner {
     overflow: hidden;
   }
+
+  .svg__fallback {
+    display: none;
+  }
+
+  &.is-svg-fallback {
+
+    .svg__fallback {
+      display: block;
+    }
+
+    .svg__animation {
+      display: none;
+    }
+
+  }
+
+  .svg__player {
+    position: relative;
+  }
+
+  &.is-svg-playing svg.play {
+    display: none;
+  }
+
+  &.is-svg-paused svg.pause {
+    display: none;
+  }
+
+  &.is-svg-playing .svg__playpause {
+    opacity: 0;
+  }
+
+  html:not(.touch) &.is-svg-playing .svg__player:hover .svg__playpause,
+  &.is-svg-paused .svg__playpause {
+    opacity: 1;
+    transition: none;
+  }
+
+  .svg__playpause {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 4em;
+    width: 3.5em;
+    padding: 0.5em;
+    background: transparent;
+    transition: opacity 0.4s ease-in-out 0.4s;
+  }
+
 }

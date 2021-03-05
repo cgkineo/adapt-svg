@@ -3,7 +3,40 @@
   {{> component this}}
 
   <div class="component__widget svg__widget">
-    <div class="svg__widget-aligner"></div>
+    <div class="svg__fallback">
+      <img loading="eager" src="{{_fallback.src}}"{{#if _fallback.alt}} alt="{{_fallback.alt}}"{{else}} aria-hidden="true"{{/if}} />
+      {{#if _fallback.description}}
+      <div class="aria-label">{{{_fallback.description}}}</div>
+      {{/if}}
+      {{#if _fallback.attribution}}
+      <div class="attribution">{{{_fallback.attribution}}}</div>
+      {{/if}}
+    </div>
+    <div class="svg__animation">
+      <div class="svg__player{{#if _animation._showPauseControl}} js-svg-play-pause{{/if}}">
+        {{#if _animation.alt}}
+        {{a11y_aria_image _animation.alt}}
+        {{/if}}
+        {{#if _animation.description}}
+        <div class="aria-label">{{{_animation.description}}}</div>
+        {{/if}}
+        <div class="svg__widget-aligner" aria-hidden="true">
+        </div>
+        {{#if _animation._showPauseControl}}
+        <button class="svg__playpause" type="button" aria-label="Pause">
+          <svg class="pause" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 24 28">
+            <path d="M24 3v22l-1 1h-8l-1-1V3l1-1h8l1 1zM10 3v22l-1 1H1l-1-1V3l1-1h8l1 1z"></path>
+          </svg>
+          <svg class="play" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 22 28">
+            <path d="M22 14L1 26l-1-1V2h1l21 12z"></path>
+          </svg>
+        </button>
+        {{/if}}
+      </div>
+      {{#if _animation.attribution}}
+      <div class="attribution">{{{_animation.attribution}}}</div>
+      {{/if}}
+    </div>
   </div>
 
 </div>

@@ -1,18 +1,33 @@
     {
-        "_id": "c-100",
-        "_parentId": "b-100",
+        "_id": "c-15",
+        "_parentId": "b-10",
         "_type": "component",
         "_component": "svg",
         "_classes": "",
         "_layout": "full",
-        "title": "SVG",
-        "displayTitle": "SVG",
+        "title": "",
+        "displayTitle": "",
         "body": "",
         "instruction": "",
-        "_svg": {
-            "_renderer": "svg",
-            "_path": "course/en/images/c-100",
-            "_loop": 0,
-            "_percentInviewVertical": 1
+        "_setCompletionOn": "inview",
+        "_animation": {
+            "_src": "course/en/video/lottiesample.json",
+            "alt": "",
+            "description": "",
+            "attribution": "",
+            "_loops": 0,
+            "_autoPlay": true,
+            "_onScreenPercentInviewVertical": 1,
+            "_offScreenPause": true,
+            "_offScreenRewind": true,
+            "_showPauseControl": true,
+            "_onPauseRewind": false,
+            "_renderer": "svg"
+        },
+        "_fallback": {
+            "src": "",
+            "alt": "",
+            "description": "",
+            "attribution": ""
         }
-    }
+    },
