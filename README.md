@@ -14,11 +14,11 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 >**\_src** (String): Set the path to the Bodymovin export file or folder. A folder should contain the animation *data.json* file plus any associated static images in an *images* folder (if applicable). A file should contain just the animation *data.json*.
 
->**\alt** (String): The short alternative text for the animation.
+>**alt** (String): The short alternative text for the animation.
 
->**\description** (String): A longer description of the animation to be used when the animation content is not described in adjacent text.
+>**description** (String): A longer description of the animation to be used when the animation content is not described in adjacent text.
 
->**\attribution** (String): Text to be displayed as an attribution of animation.
+>**attribution** (String): Text to be displayed as an attribution of animation.
 
 >**\_loops** (Number): Controls how many times the animation should loop. To set an infinite loop, use a value of `-1`. Defaults to `0` (don't loop).
 
@@ -40,11 +40,11 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 >**\_src** (String): Set the path for a fallback graphic.  
 
->**\alt** (String): The short alternative text for the fallback graphic.
+>**alt** (String): The short alternative text for the fallback graphic.
 
->**\description** (String): A longer description of the fallback graphic to be used when the graphic content is not described in adjacent text.
+>**description** (String): A longer description of the fallback graphic to be used when the graphic content is not described in adjacent text.
 
->**\attribution** (String): Text to be displayed as an attribution of fallback graphic.
+>**attribution** (String): Text to be displayed as an attribution of fallback graphic.
 
 ## Limitations
 
