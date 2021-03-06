@@ -1,12 +1,8 @@
-define([
-  'core/js/adapt',
-  './svg-model',
-  './svg-view'
-], function(Adapt, SvgModel, SvgView) {
+import Adapt from 'core/js/adapt';
+import SvgModel from './svg-model';
+import SvgView from './svg-view';
 
-  return Adapt.register('svg', {
-    model: SvgModel,
-    view: SvgView
-  });
-
+export default Adapt.register('svg', {
+  model: SvgModel,
+  view: SvgView
 });

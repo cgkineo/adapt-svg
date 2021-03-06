@@ -1,12 +1,3 @@
-define([
-  'core/js/adapt',
-  'core/js/models/componentModel'
-],function(Adapt, ComponentModel) {
+import ComponentModel from 'core/js/models/componentModel';
 
-  var SvgModel = ComponentModel.extend({
-
-  });
-
-  return SvgModel;
-
-});
+export default class SvgModel extends ComponentModel {}
