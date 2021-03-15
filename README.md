@@ -1,8 +1,8 @@
 # Adapt SVG
 
-**Adapt SVG** is a *presentational component* that renders SVGs, which can be static or animated, in the content area. When offscreen, the animation does not play and is reset to its starting frame.
+**Adapt SVG** is a *presentational component* that renders Lottie animations exported from Adobe After Effect using the Bodymovin plugin.
 
-Uses v5.5.7 of Lottie.
+Uses v5.7.6 of Lottie.
 
 ## Settings Overview
 
@@ -10,30 +10,51 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 ### Attributes
 
-**\_svg** (object): The SVG that constitutes the component. It contains values for **\_path**, **\_autoplay**, and **\_loop**.
+**\_animation** (object): It contains values for **\_src**, **\alt**, **\description**, **\attribution**, **\_loops**, **\_autoPlay**, **\_onScreenPercentInviewVertical**, **\_offScreenPause**, **\_offScreenRewind**, **\_showPauseControl**, **\_onPauseRewind**, **\_renderer**
+
+>**\_src** (String): Set the path to the Bodymovin export file or folder. A folder should contain the animation *data.json* file plus any associated static images in an *images* folder (if applicable). A file should contain just the animation *data.json*.
+
+>**alt** (String): The short alternative text for the animation.
+
+>**description** (String): A longer description of the animation to be used when the animation content is not described in adjacent text.
+
+>**attribution** (String): Text to be displayed as an attribution of animation.
+
+>**\_loops** (Number): Controls how many times the animation should loop. To set an infinite loop, use a value of `-1`. Defaults to `0` (don't loop).
+
+>**\_autoPlay** (Boolean): Should the animation play when on screen. Note: Percentage onscreen determines when autoplay occurs. Defaults to `true`.
+
+>**\_onScreenPercentInviewVertical** (Number): What percentage of the SVG container should be on-screen before the animation is triggered. Defaults to `1`.
+
+>**\_offScreenPause** (Boolean): Pause when off screen. Defaults to `true`.
+
+>**\_offScreenRewind** (Boolean): Rewind when off screen. Defaults to `true`.
+
+>**\_showPauseControl** (Boolean): Show the play / pause button. Defaults to `false`.
+
+>**\_onPauseRewind** (Boolean): Rewind when the pause button is clicked. Defaults to `false`.
 
 >**\_renderer** (String): Sets which renderer to use. Acceptable values are `svg` `canvas` and `html` - default should be `svg` when using vector based animation and `canvas` if animation is comprised of just images. Defaults to `"svg"`.
 
->**\_path** (String): Set the path to the SVG export folder. Folder should contain the SVG *data.json* file plus any associated static images in an *images* folder (if applicable).
+**\_fallback** (object): It contains values for **\_src**, **\alt**, **\description**, **\attribution**
 
->**\_loop** (Number): Controls how many times the animation should loop. To set an infinite loop, use a value of `-1`. Defaults to `0` (don't loop).
+>**\_src** (String): Set the path for a fallback graphic.  
 
->**\_percentInviewVertical** (Number) What percentage of the SVG container should be on-screen before the animation is triggered. Defaults to `1`.
+>**alt** (String): The short alternative text for the fallback graphic.
 
-### Accessibility
+>**description** (String): A longer description of the fallback graphic to be used when the graphic content is not described in adjacent text.
 
-None
+>**attribution** (String): Text to be displayed as an attribution of fallback graphic.
 
 ## Limitations
 
 * Not yet been stress tested
-* Not AAT compatible
 
 ----------------------------
-**Version number:**  2.1.0   
+**Version number:**  3.0.0   
 **Framework versions:**  >=5   
 **Author / maintainer:** Kirsty Hames / Kineo   
-**Accessibility support:** None   
+**Accessibility support:** WAI AA   
 **RTL support:** Yes   
 **Cross-platform coverage:** Evergreen + IE11   
 
@@ -156,13 +177,13 @@ Fast (like a quarter of Snap.js)
 ## API configurations
 
 Configurations to implement (based on similar Adapt functionality - media component / video background etc):
-_setCompletionOn: inview / play / ended
+~~_setCompletionOn: inview / play / ended~~
 _isLooped
-_offScreenPause
-_offScreenRewind
-_showControls
+~~_offScreenPause~~
+~~_offScreenRewind~~
+~~_showControls~~
 _showScrubBar
-_autoPlay
+~~_autoPlay~~
 _autoPlayAfterFinished
 _ratio
 _preventForwardScrubbing

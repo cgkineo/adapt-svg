@@ -1,0 +1,211 @@
+{
+  "type":"object",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "http://jsonschema.net",
+  "$ref": "http://localhost/plugins/content/component/model.schema",
+  "globals": {
+    "ariaRegion": {
+      "type": "string",
+      "required": true,
+      "default": "",
+      "inputType": "Text",
+      "validators": [],
+      "translatable": true
+    }
+  },
+  "properties":{
+    "_supportedLayout": {
+      "type": "string",
+      "required": true,
+      "enum": ["full-width", "half-width", "both"],
+      "default": "both",
+      "editorOnly": true
+    },
+    "instruction": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "inputType": "Text",
+      "validators": [],
+      "help": "This is the instruction text",
+      "translatable": true
+    },
+    "_setCompletionOn": {
+      "type": "string",
+      "required": false,
+      "default": "inview",
+      "title": "Set completion on:",
+      "enum": ["inview", "played", "finished"],
+      "inputType": {
+        "type": "Select",
+        "options": ["inview", "played", "finished"]
+      },
+      "validators": [],
+      "help": "Whether completion is based on the learner having played, finished - or just having viewed the component"
+    },
+    "_animation": {
+      "type":"object",
+      "required": true,
+      "title": "Lottie Animation",
+      "properties":{
+        "_src": {
+          "type":"string",
+          "required": true,
+          "default": "",
+          "title": "Lottie source (*.json)",
+          "inputType": "Asset:other",
+          "validators": ["required"],
+          "help": "JSON file exported using the bodymovin plugin. NOTICE: Can only use single file JSON. Animations with folders will not work."
+        },
+        "alt": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Alternative text",
+          "inputType": "Text",
+          "validators": [],
+          "help": "The short alternative text for the animation.",
+          "translatable": true
+        },
+        "description": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Description",
+          "inputType": "TextArea",
+          "validators": [],
+          "help": "A longer description of the animation to be used when the animation content is not described in adjacent text.",
+          "translatable": true
+        },
+        "attribution": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Attribution",
+          "inputType": "Text",
+          "validators": [],
+          "help": "Text to be displayed as an attribution of animation.",
+          "translatable": true
+        },
+        "_loops": {
+          "type": "number",
+          "required": true,
+          "default": -1,
+          "title": "Number of animation loops",
+          "inputType": "Number",
+          "validators": ["required", "number"],
+          "help": "Note: -1 for infinite loops, 0 for play once, 1 for play twice..."
+        },
+        "_autoPlay": {
+          "type": "boolean",
+          "required": true,
+          "default": true,
+          "title": "Autoplay animation?",
+          "inputType": "Checkbox",
+          "validators": [],
+          "help": "Note: Percentage onscreen determines when autoplay occurs."
+        },
+        "_onScreenPercentInviewVertical": {
+          "type": "number",
+          "required": true,
+          "default": 1,
+          "title": "Percentage on-screen",
+          "inputType": "Number",
+          "validators": ["required", "number"],
+          "help": "At least this much must in view before autoplaying. Less than is considered off-screen"
+        },
+        "_offScreenPause": {
+          "type": "boolean",
+          "required": true,
+          "default": true,
+          "title": "Pause when off-screen?",
+          "inputType": "Checkbox",
+          "validators": []
+        },
+        "_offScreenRewind": {
+          "type": "boolean",
+          "required": true,
+          "default": true,
+          "title": "Rewind when off-screen?",
+          "inputType": "Checkbox",
+          "validators": []
+        },
+        "_showPauseControl": {
+          "type": "boolean",
+          "required": true,
+          "default": false,
+          "title": "Show play/pause button?",
+          "inputType": "Checkbox",
+          "validators": []
+        },
+        "_onPauseRewind": {
+          "type": "boolean",
+          "required": true,
+          "default": false,
+          "title": "Rewind when paused?",
+          "inputType": "Checkbox",
+          "validators": []
+        },
+        "_renderer": {
+          "type": "string",
+          "required": false,
+          "default": "svg",
+          "title": "Lottie renderer",
+          "enum": ["svg", "canvas", "html"],
+          "inputType": {
+            "type": "Select",
+            "options": ["svg", "canvas", "html"]
+          },
+          "validators": [],
+          "help": "Should be `svg` when using vector based animation and `canvas` if animation is comprised of just images."
+        }
+      }
+    },
+    "_fallback": {
+      "type":"object",
+      "required": true,
+      "title": "Fallback Graphic",
+      "properties":{
+        "_src": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Graphic",
+          "inputType": "Asset:image",
+          "validators": [],
+          "help": "The fallback graphic that appears if the animation fails to load."
+        },
+        "alt": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Alternative text",
+          "inputType": "Text",
+          "validators": [],
+          "help": "The alternative text for the fallback graphic.",
+          "translatable": true
+        },
+        "description": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Description",
+          "inputType": "TextArea",
+          "validators": [],
+          "help": "A longer description of the fallback graphic to be used when the graphic content is not described in adjacent text.",
+          "translatable": true
+        },
+        "attribution": {
+          "type":"string",
+          "required": false,
+          "default": "",
+          "title": "Attribution",
+          "inputType": "Text",
+          "validators": [],
+          "help": "Text to be displayed as an attribution of fallback graphic",
+          "translatable": true
+        }
+      }
+    }
+  }
+}
