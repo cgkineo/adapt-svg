@@ -51,8 +51,8 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 * Not yet been stress tested
 
 ----------------------------
-**Version number:**  3.0.0   
-**Framework versions:**  >=5   
+**Version number:**  3.0.1   
+**Framework versions:**  >=5.8   
 **Author / maintainer:** Kirsty Hames / Kineo   
 **Accessibility support:** WAI AA   
 **RTL support:** Yes   
