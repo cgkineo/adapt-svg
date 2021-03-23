@@ -24,16 +24,14 @@
     position: relative;
   }
 
-  &.is-svg-playing svg.play {
-    display: none;
-  }
-
-  &.is-svg-paused svg.pause {
-    display: none;
-  }
-
   &.is-svg-playing .svg__playpause {
     opacity: 0;
+    .icon-video-pause;
+  }
+
+  &.is-svg-paused .svg__playpause {
+    opacity: 0;
+    .icon-video-play;
   }
 
   html:not(.touch) &.is-svg-playing .svg__player:hover .svg__playpause,
@@ -47,11 +45,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 4em;
-    width: 3.5em;
     padding: 0.5em;
     background: transparent;
     transition: opacity 0.4s ease-in-out 0.4s;
+
+    &:before {
+      font-size: 3.5em;
+    }
   }
 
 }
