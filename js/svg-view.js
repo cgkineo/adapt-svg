@@ -150,12 +150,14 @@ export default class SvgView extends ComponentView {
     const isPaused = this.animation.isPaused;
     const isFinished = (this.animation.currentFrame === this.animation.totalFrames - 1);
     if (isPaused && isFinished) {
+      this.animation.stop();
       this.animation.goToAndPlay(0);
     } else if (isPaused) {
       this.animation.play();
     } else {
       this.animation.pause();
       if (this.model.get('_animation')._onPauseRewind) {
+        this.animation.stop();
         this.animation.goToAndStop(0);
       }
     }
