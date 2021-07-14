@@ -26,9 +26,15 @@
         <button class="svg__playpause icon" type="button" aria-label="Pause"></button>
         {{/if}}
       </div>
+
       {{#if _animation.attribution}}
-      <div class="attribution">{{{_animation.attribution}}}</div>
+      <div class="component__attribution svg__attribution">
+        <div class="component__attribution-inner svg__attribution-inner">
+          {{{_animation.attribution}}}
+        </div>
+      </div>
       {{/if}}
+      
     </div>
   </div>
 
