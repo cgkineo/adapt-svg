@@ -30,6 +30,15 @@
       "help": "This is the instruction text",
       "translatable": true
     },
+    "_isReducedMotionSupportEnabled": {
+      "type": "boolean",
+      "required": true,
+      "default": false,
+      "title": "Enable reduced motion support?",
+      "inputType": "Checkbox",
+      "validators": [],
+      "help": "Respect operating system prefers-reduced-motion setting."
+    },
     "_setCompletionOn": {
       "type": "string",
       "required": false,

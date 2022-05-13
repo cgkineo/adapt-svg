@@ -10,6 +10,9 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 ### Attributes
 
+
+**\_isReducedMotionSupportEnabled** (Boolean): Respect operating system prefers-reduced-motion setting by disabling the animations. Defaults to `false`.
+
 **\_animation** (object): It contains values for **\_src**, **\alt**, **\description**, **\attribution**, **\_loops**, **\_autoPlay**, **\_onScreenPercentInviewVertical**, **\_offScreenPause**, **\_offScreenRewind**, **\_showPauseControl**, **\_onPauseRewind**, **\_renderer**
 
 >**\_src** (String): Set the path to the Bodymovin export file or folder. A folder should contain the animation *data.json* file plus any associated static images in an *images* folder (if applicable). A file should contain just the animation *data.json*.
