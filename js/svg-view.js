@@ -86,6 +86,7 @@ export default class SvgView extends ComponentView {
   }
 
   setUpReducedMotion() {
+    if (!this.model.get('_isReducedMotionSupportEnabled')) return;
     if (!window.matchMedia) return;
     this._reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!this?._reducedMotionQuery?.addEventListener) return;
@@ -96,7 +97,7 @@ export default class SvgView extends ComponentView {
 
   onReducedMotionChange() {
     if (!this.animation) return;
-    const isReducedMotion = (this._reducedMotionQuery && this._reducedMotionQuery.matches);
+    const isReducedMotion = (this.model.get('_isReducedMotionSupportEnabled') && this._reducedMotionQuery && this._reducedMotionQuery.matches);
     const animation = this.model.get('_animation');
     if (isReducedMotion) {
       animation._autoPlay = false;

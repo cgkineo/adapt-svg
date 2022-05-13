@@ -10,6 +10,7 @@
         "body": "",
         "instruction": "",
         "_setCompletionOn": "inview",
+        "_isReducedMotionSupportEnabled": false,
         "_animation": {
             "_src": "course/en/video/lottiesample.json",
             "alt": "",
