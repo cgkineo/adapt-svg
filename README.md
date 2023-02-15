@@ -102,7 +102,7 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 ## Moving forward
 
-- Test use cases of multiple ani actions on different browsers/devices
+- Test use cases of multiple ani actions on different browsers/devices 
 - Get graphics to produce a complicated svg (diagram etc)
 - Compare desktop to mobile svg rendering  - how it renders different shapes etc
 - Compare different svg exports from different libraries
