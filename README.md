@@ -41,7 +41,7 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 
 **\_fallback** (object): It contains values for **\_src**, **\alt**, **\description**, **\attribution**
 
->**\_src** (String): Set the path for a fallback graphic.  
+>**\_src** (String): Set the path for a fallback graphic.
 
 >**alt** (String): The short alternative text for the fallback graphic.
 
@@ -54,12 +54,10 @@ The attributes listed below are used in *components.json* to configure **Adapt S
 * Not yet been stress tested
 
 ----------------------------
-**Version number:**  3.0.2   
-**Framework versions:**  >=5.8   
-**Author / maintainer:** Kirsty Hames / Kineo   
-**Accessibility support:** WAI AA   
-**RTL support:** Yes   
-**Cross-platform coverage:** Evergreen + IE11   
+**Author / maintainer:** Kirsty Hames / Kineo
+**Accessibility support:** WAI AA
+**RTL support:** Yes
+**Cross-platform coverage:** Evergreen + IE11
 
 ----------------------------
 
