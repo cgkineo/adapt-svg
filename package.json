@@ -1,11 +1,11 @@
 {
   "name": "adapt-svg",
-  "version": "3.1.1",
+  "version": "1.0.0",
   "framework": ">=5.8",
   "homepage": "https://github.com/cgkineo/adapt-svg",
   "issues": "https://github.com/cgkineo/adapt-svg/issues",
-  "component" : "svg",
-  "displayName" : "Lottie Animation",
+  "component": "svg",
+  "displayName": "Lottie Animation",
   "description": "An svg-based animation exported from Adobe After Effects using the Bodymovin plugin",
   "main": "/js/adapt-svg.js",
   "keywords": [
