@@ -13,7 +13,7 @@
       {{/if}}
     </div>
     <div class="svg__animation">
-      <div class="svg__player{{#if _animation._showPauseControl}} js-svg-play-pause{{/if}}">
+      <div class="svg__player{{#if _animation._showPauseControl}} js-svg-play-pause{{/if}}"{{#any _animation.alt _animation.description}}{{else}} aria-hidden="true"{{/any}}>
         {{#if _animation.alt}}
         {{a11y_aria_image _animation.alt}}
         {{/if}}
