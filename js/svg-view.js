@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
 import ComponentView from 'core/js/views/componentView';
 import Lottie from 'libraries/lottie.min';
+import documentModifications from 'core/js/DOMElementModifications';
 
 export default class SvgView extends ComponentView {
 
@@ -22,6 +23,8 @@ export default class SvgView extends ComponentView {
 
   postRender() {
     this.setUpAnimation();
+    this.setUpListeners();
+
     if (this.model.get('_setCompletionOn') !== 'inview') return;
     this.setupInviewCompletion();
   }
@@ -38,11 +41,18 @@ export default class SvgView extends ComponentView {
       autoplay: false, // we'll use checkIfOnScreen to control when playback starts
       path: isSingleFile ? src : src + '/data.json'
     });
+  }
+
+  setUpListeners() {
     this.animation.addEventListener('data_ready', this.onReady);
     this.animation.addEventListener('data_failed', this.onFail);
     this.animation.addEventListener('complete', this.update);
     this.animation.addEventListener('loopComplete', this.update);
     this.animation.addEventListener('enterFrame', this.update);
+
+    documentModifications.on('changed:html', event => {
+      this.checkVisua11y();
+    });
   }
 
   onFail() {
@@ -189,6 +199,23 @@ export default class SvgView extends ComponentView {
 
   shouldUpdate() {
     return (this.isPaused !== this.animation.isPaused);
+  }
+
+  goToEndAndStop() {
+    // const lastFrame = this.animation.totalFrames - 1;
+    // this.animation.loop = 0;
+    // this.animation.goToAndStop(lastFrame, true);
+    // this.showControls = false;
+    // this.pause();
+  }
+
+  checkVisua11y() {
+    const htmlClasses = document.documentElement.classList;
+
+    if (htmlClasses.contains('a11y-no-animations')) {
+      // Stop on last frame
+      this.goToEndAndStop();
+    }
   }
 
   remove() {
