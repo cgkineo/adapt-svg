@@ -200,9 +200,10 @@ export default class SvgView extends ComponentView {
 
   goToEndAndStop() {
     const animation = this.model.get('_animation');
-    const lastFrame = this.animation.totalFrames - 1;
     animation._autoPlay = false;
     animation._showPauseControl = false;
+
+    const lastFrame = this.animation.totalFrames - 1;
     this.toggleControls();
     this.animation.goToAndStop(lastFrame, true);
     this.animation.pause();
