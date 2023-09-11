@@ -110,10 +110,7 @@ export default class SvgView extends ComponentView {
     const isReducedMotion = (this.model.get('_isReducedMotionSupportEnabled') && this._reducedMotionQuery && this._reducedMotionQuery.matches);
     const animation = this.model.get('_animation');
     if (isReducedMotion) {
-      animation._autoPlay = false;
-      this.model.set('_animation', animation);
-      this.animation.goToAndStop(this.animation.firstFrame + this.animation.totalFrames - 1, true);
-      this.update();
+      this.goToEndAndStop();
       return;
     }
     animation._autoPlay = this.model.get('_originalAutoplay');
@@ -202,19 +199,32 @@ export default class SvgView extends ComponentView {
   }
 
   goToEndAndStop() {
-    // const lastFrame = this.animation.totalFrames - 1;
-    // this.animation.loop = 0;
-    // this.animation.goToAndStop(lastFrame, true);
-    // this.showControls = false;
-    // this.pause();
+    const animation = this.model.get('_animation');
+    const lastFrame = this.animation.totalFrames - 1;
+    animation._autoPlay = false;
+    animation._showPauseControl = false;
+    this.toggleControls();
+    this.animation.goToAndStop(lastFrame, true);
+    this.animation.pause();
+    this.update();
   }
 
   checkVisua11y() {
     const htmlClasses = document.documentElement.classList;
+    if (!htmlClasses.contains('a11y-no-animations')) return;
 
-    if (htmlClasses.contains('a11y-no-animations')) {
-      // Stop on last frame
-      this.goToEndAndStop();
+    // Stop on last frame
+    this.goToEndAndStop();
+  }
+
+  toggleControls() {
+    const animation = this.model.get('_animation');
+    const showPauseControl = animation._showPauseControl;
+    this.$('.svg__playpause').toggle(showPauseControl);
+
+    if (!showPauseControl) {
+      // Remove click event
+      this.undelegateEvents();
     }
   }
 
