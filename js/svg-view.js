@@ -222,10 +222,10 @@ export default class SvgView extends ComponentView {
     const showPauseControl = animation._showPauseControl;
     this.$('.svg__playpause').toggle(showPauseControl);
 
-    if (!showPauseControl) {
-      // Remove click event
-      this.undelegateEvents();
-    }
+    if (showPauseControl) return;
+
+    // Remove click event
+    this.undelegateEvents();
   }
 
   remove() {
