@@ -50,9 +50,7 @@ export default class SvgView extends ComponentView {
     this.animation.addEventListener('loopComplete', this.update);
     this.animation.addEventListener('enterFrame', this.update);
 
-    documentModifications.on('changed:html', event => {
-      this.checkVisua11y();
-    });
+    this.listenTo(documentModifications, 'changed:html', this.checkVisua11y);
   }
 
   onFail() {
