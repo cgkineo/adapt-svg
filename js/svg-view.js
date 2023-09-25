@@ -200,7 +200,11 @@ export default class SvgView extends ComponentView {
     return (this.isPaused !== this.animation.isPaused);
   }
 
-  replay() {
+  restart() {
+    const animation = this.model.get('_animation');
+    animation._showPauseControl = this.model.get('_originalShowPauseControl');
+    animation._autoPlay = this.model.get('_originalAutoPlay');
+    this.toggleControls();
     this.animation.goToAndPlay(0);
     this.update();
   }
@@ -224,12 +228,8 @@ export default class SvgView extends ComponentView {
 
     // Check if animation should start playing again
     if (this.isPausedWithVisua11y && !shouldStopAnimations) {
-      const animation = this.model.get('_animation');
-      animation._showPauseControl = this.model.get('_originalShowPauseControl');
-      animation._autoPlay = this.model.get('_originalAutoPlay');
-      this.toggleControls();
       this.isPausedWithVisua11y = false;
-      this.replay();
+      this.restart();
       return;
     }
 
