@@ -111,7 +111,7 @@ export default class SvgView extends ComponentView {
     const isReducedMotion = (this.model.get('_isReducedMotionSupportEnabled') && this._reducedMotionQuery && this._reducedMotionQuery.matches);
     const animation = this.model.get('_animation');
     if (isReducedMotion) {
-      this.goToEndAndStop();
+      this.stopAtEnd();
       return;
     }
     animation._autoPlay = this.model.get('_originalAutoplay');
@@ -205,7 +205,7 @@ export default class SvgView extends ComponentView {
     this.update();
   }
 
-  goToEndAndStop() {
+  stopAtEnd() {
     const animation = this.model.get('_animation');
     animation._autoPlay = false;
     animation._showPauseControl = false;
@@ -235,7 +235,7 @@ export default class SvgView extends ComponentView {
 
     // Stop on last frame
     this.isPausedWithVisua11y = true;
-    this.goToEndAndStop();
+    this.stopAtEnd();
   }
 
   toggleControls() {
