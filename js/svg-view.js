@@ -14,8 +14,9 @@ export default class SvgView extends ComponentView {
   preRender() {
     this.isPaused = null;
     this.isPausedWithVisua11y = false;
-    this.model.set('_originalShowPauseControl', this.model.get('_animation')._showPauseControl);
-    this.model.set('_originalAutoPlay', this.model.get('_animation')._autoPlay);
+    const animationConfig = this.model.get('_animation');
+    this.model.set('_originalShowPauseControl', animationConfig._showPauseControl);
+    this.model.set('_originalAutoPlay', animationConfig._autoPlay);
     this.isInteracted = false;
     _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady', 'onReducedMotionChange');
     this.update = _.throttle(this.update.bind(this), 17);
@@ -33,13 +34,13 @@ export default class SvgView extends ComponentView {
   }
 
   setUpAnimation() {
-    const animation = this.model.get('_animation');
-    const src = animation._src;
-    const loop = animation._loops;
+    const animationConfig = this.model.get('_animation');
+    const src = animationConfig._src;
+    const loop = animationConfig._loops;
     const isSingleFile = /\.json/.test(src);
     this.animation = Lottie.loadAnimation({
       container: this.$('.svg__widget-aligner')[0],
-      renderer: animation._renderer || 'svg',
+      renderer: animationConfig._renderer || 'svg',
       loop: loop === -1 ? true : loop, // see https://github.com/airbnb/lottie-web/wiki/loadAnimation-options#loop-default-is-true
       autoplay: false, // we'll use checkIfOnScreen to control when playback starts
       path: isSingleFile ? src : src + '/data.json'
@@ -74,7 +75,8 @@ export default class SvgView extends ComponentView {
   }
 
   onResize() {
-    if (this.model.get('_animation')._renderer !== 'svg') return;
+    const animationConfig = this.model.get('_animation');
+    if (animationConfig._renderer !== 'svg') return;
     const $svg = this.$('.svg__widget-aligner svg');
     const $aligner = this.$('.svg__widget-aligner');
     this.dimensions = this.dimensions || {
@@ -97,32 +99,34 @@ export default class SvgView extends ComponentView {
   }
 
   setUpReducedMotion() {
+    const animationConfig = this.model.get('_animation');
     if (!this.model.get('_isReducedMotionSupportEnabled')) return;
     if (!window.matchMedia) return;
     this._reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!this?._reducedMotionQuery?.addEventListener) return;
     this._reducedMotionQuery.addEventListener('change', this.onReducedMotionChange);
-    this.model.set('_originalAutoplay', this.model.get('_animation')._autoPlay);
+    this.model.set('_originalAutoplay', animationConfig._autoPlay);
     this.onReducedMotionChange();
   }
 
   onReducedMotionChange() {
     if (!this.animation) return;
     const isReducedMotion = (this.model.get('_isReducedMotionSupportEnabled') && this._reducedMotionQuery && this._reducedMotionQuery.matches);
-    const animation = this.model.get('_animation');
     if (isReducedMotion) {
       this.stopAtEnd();
       return;
     }
-    animation._autoPlay = this.model.get('_originalAutoplay');
-    this.model.set('_animation', animation);
+    const animationConfig = this.model.get('_animation');
+    animationConfig._autoPlay = this.model.get('_originalAutoplay');
+    this.model.set('_animation', animationConfig);
     const shouldAutoPlay = (!this.shouldCheckIfOnScreen() || this.isOnScreen);
     this.animation[shouldAutoPlay ? 'goToAndPlay' : 'goToAndStop'](this.animation.firstFrame, true);
     this.update();
   }
 
   shouldCheckIfOnScreen() {
-    return (this.model.get('_animation')._onScreenPercentInviewVertical > 0);
+    const animationConfig = this.model.get('_animation');
+    return (animationConfig._onScreenPercentInviewVertical > 0);
   }
 
   checkIfResetOnRevisit() {
@@ -133,20 +137,20 @@ export default class SvgView extends ComponentView {
 
   checkIfOnScreen (event, measurements) {
     if (!this.animation || !this.shouldCheckIfOnScreen()) return;
-    const animation = this.model.get('_animation');
-    const percentage = animation._onScreenPercentInviewVertical;
+    const animationConfig = this.model.get('_animation');
+    const percentage = animationConfig._onScreenPercentInviewVertical;
     this.isOnScreen = (measurements.percentInviewVertical >= percentage);
     if (this.isOnScreen) {
-      if (!animation._autoPlay || this.isInteracted) return;
+      if (!animationConfig._autoPlay || this.isInteracted) return;
       this.animation.play();
       this.update();
       return;
     }
-    if (animation._offScreenPause) {
+    if (animationConfig._offScreenPause) {
       this.animation.pause();
       this.update();
     }
-    if (animation._offScreenRewind) {
+    if (animationConfig._offScreenRewind) {
       this.animation.goToAndStop(this.animation.firstFrame, true);
       this.update();
     }
@@ -155,8 +159,8 @@ export default class SvgView extends ComponentView {
   onPlayPauseClick(event) {
     this.isInteracted = true;
     event.preventDefault();
-    const animation = this.model.get('_animation');
-    if (!this.animation || !animation._showPauseControl) return;
+    const animationConfig = this.model.get('_animation');
+    if (!this.animation || !animationConfig._showPauseControl) return;
     const isPaused = this.animation.isPaused;
     const isFinished = (this.animation.currentFrame === this.animation.totalFrames - 1);
     if (isPaused && isFinished) {
@@ -166,7 +170,7 @@ export default class SvgView extends ComponentView {
       this.animation.play();
     } else {
       this.animation.pause();
-      if (this.model.get('_animation')._onPauseRewind) {
+      if (animationConfig._onPauseRewind) {
         this.animation.stop();
         this.animation.goToAndStop(0);
       }
@@ -201,18 +205,18 @@ export default class SvgView extends ComponentView {
   }
 
   restart() {
-    const animation = this.model.get('_animation');
-    animation._showPauseControl = this.model.get('_originalShowPauseControl');
-    animation._autoPlay = this.model.get('_originalAutoPlay');
+    const animationConfig = this.model.get('_animation');
+    animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
+    animationConfig._autoPlay = this.model.get('_originalAutoPlay');
     this.toggleControls();
     this.animation.goToAndPlay(0);
     this.update();
   }
 
   stopAtEnd() {
-    const animation = this.model.get('_animation');
-    animation._autoPlay = false;
-    animation._showPauseControl = false;
+    const animationConfig = this.model.get('_animation');
+    animationConfig._autoPlay = false;
+    animationConfig._showPauseControl = false;
     const lastFrame = this.animation.totalFrames - 1;
     this.toggleControls();
     this.animation.goToAndStop(lastFrame, true);
@@ -238,9 +242,8 @@ export default class SvgView extends ComponentView {
   }
 
   toggleControls() {
-    const animation = this.model.get('_animation');
-    const showPauseControl = animation._showPauseControl;
-    this.$el.toggleClass('hide-controls', !showPauseControl);
+    const animationConfig = this.model.get('_animation');
+    this.$el.toggleClass('hide-controls', !animationConfig._showPauseControl);
   }
 
   remove() {
