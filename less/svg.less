@@ -30,8 +30,11 @@
   }
 
   &.is-svg-paused .svg__playpause {
-    opacity: 0;
     .icon-video-play;
+  }
+
+  &.is-svg-paused.hide-controls .svg__playpause {
+    visibility: hidden;
   }
 
   html:not(.touch) &.is-svg-playing .svg__player:hover .svg__playpause,

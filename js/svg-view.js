@@ -13,6 +13,9 @@ export default class SvgView extends ComponentView {
 
   preRender() {
     this.isPaused = null;
+    this.isPausedWithVisua11y = false;
+    this.model.set('_originalShowPauseControl', this.model.get('_animation')._showPauseControl);
+    this.model.set('_originalAutoPlay', this.model.get('_animation')._autoPlay);
     this.isInteracted = false;
     _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady', 'onReducedMotionChange');
     this.update = _.throttle(this.update.bind(this), 17);
@@ -152,7 +155,8 @@ export default class SvgView extends ComponentView {
   onPlayPauseClick(event) {
     this.isInteracted = true;
     event.preventDefault();
-    if (!this.animation) return;
+    const animation = this.model.get('_animation');
+    if (!this.animation || !animation._showPauseControl) return;
     const isPaused = this.animation.isPaused;
     const isFinished = (this.animation.currentFrame === this.animation.totalFrames - 1);
     if (isPaused && isFinished) {
@@ -196,6 +200,11 @@ export default class SvgView extends ComponentView {
     return (this.isPaused !== this.animation.isPaused);
   }
 
+  replay() {
+    this.animation.goToAndPlay(0);
+    this.update();
+  }
+
   goToEndAndStop() {
     const animation = this.model.get('_animation');
     animation._autoPlay = false;
@@ -210,21 +219,29 @@ export default class SvgView extends ComponentView {
 
   checkVisua11y() {
     const htmlClasses = document.documentElement.classList;
-    if (!htmlClasses.contains('a11y-no-animations')) return;
+    const shouldStopAnimations = htmlClasses.contains('a11y-no-animations');
+    if (!shouldStopAnimations && !this.isPausedWithVisua11y) return;
+
+    // Check if animation should start playing again
+    if (this.isPausedWithVisua11y && !shouldStopAnimations) {
+      const animation = this.model.get('_animation');
+      animation._showPauseControl = this.model.get('_originalShowPauseControl');
+      animation._autoPlay = this.model.get('_originalAutoPlay');
+      this.toggleControls();
+      this.isPausedWithVisua11y = false;
+      this.replay();
+      return;
+    }
 
     // Stop on last frame
+    this.isPausedWithVisua11y = true;
     this.goToEndAndStop();
   }
 
   toggleControls() {
     const animation = this.model.get('_animation');
     const showPauseControl = animation._showPauseControl;
-    this.$('.svg__playpause').toggle(showPauseControl);
-
-    if (showPauseControl) return;
-
-    // Remove click event
-    this.undelegateEvents();
+    this.$el.toggleClass('hide-controls', !showPauseControl);
   }
 
   remove() {
