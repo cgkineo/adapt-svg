@@ -19,7 +19,8 @@ export default class SvgView extends ComponentView {
     this.update = _.throttle(this.update.bind(this), 17);
     this.isOnScreen = false;
     this.listenTo(Adapt, 'device:resize', this.onResize);
-    this.checkOriginalValues();
+    this.setUpOriginalValues();
+    this.resetToOriginalValues();
     this.checkIfResetOnRevisit();
   }
 
@@ -31,7 +32,7 @@ export default class SvgView extends ComponentView {
     this.setupInviewCompletion();
   }
 
-  checkOriginalValues() {
+  setUpOriginalValues() {
     const animationConfig = this.model.get('_animation');
     if (this.model.get('_originalShowPauseControl') === undefined) {
       this.model.set('_originalShowPauseControl', animationConfig._showPauseControl);
@@ -39,10 +40,14 @@ export default class SvgView extends ComponentView {
     if (this.model.get('_originalAutoPlay') === undefined) {
       this.model.set('_originalAutoPlay', animationConfig._autoPlay);
     }
-    if (!this.isPausedWithVisua11y) {
-      animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
-      animationConfig._autoPlay = this.model.get('_originalAutoPlay');
-    }
+  }
+
+  resetToOriginalValues() {
+    if (this.isPausedWithVisua11y) { return; }
+
+    const animationConfig = this.model.get('_animation');
+    animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
+    animationConfig._autoPlay = this.model.get('_originalAutoPlay');
   }
 
   setUpAnimation() {
