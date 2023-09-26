@@ -13,15 +13,13 @@ export default class SvgView extends ComponentView {
 
   preRender() {
     this.isPaused = null;
-    this.isPausedWithVisua11y = false;
-    const animationConfig = this.model.get('_animation');
-    this.model.set('_originalShowPauseControl', animationConfig._showPauseControl);
-    this.model.set('_originalAutoPlay', animationConfig._autoPlay);
+    this.isPausedWithVisua11y = this.hasA11yNoAnimations;
     this.isInteracted = false;
     _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady', 'onReducedMotionChange');
     this.update = _.throttle(this.update.bind(this), 17);
     this.isOnScreen = false;
     this.listenTo(Adapt, 'device:resize', this.onResize);
+    this.checkOriginalValues();
     this.checkIfResetOnRevisit();
   }
 
@@ -31,6 +29,20 @@ export default class SvgView extends ComponentView {
 
     if (this.model.get('_setCompletionOn') !== 'inview') return;
     this.setupInviewCompletion();
+  }
+
+  checkOriginalValues() {
+    const animationConfig = this.model.get('_animation');
+    if (this.model.get('_originalShowPauseControl') === undefined) {
+      this.model.set('_originalShowPauseControl', animationConfig._showPauseControl);
+    }
+    if (this.model.get('_originalAutoPlay') === undefined) {
+      this.model.set('_originalAutoPlay', animationConfig._autoPlay);
+    }
+    if (!this.isPausedWithVisua11y) {
+      animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
+      animationConfig._autoPlay = this.model.get('_originalAutoPlay');
+    }
   }
 
   setUpAnimation() {
@@ -53,7 +65,6 @@ export default class SvgView extends ComponentView {
     this.animation.addEventListener('complete', this.update);
     this.animation.addEventListener('loopComplete', this.update);
     this.animation.addEventListener('enterFrame', this.update);
-
     this.listenTo(documentModifications, 'changed:html', this.checkVisua11y);
   }
 
@@ -204,6 +215,11 @@ export default class SvgView extends ComponentView {
     return (this.isPaused !== this.animation.isPaused);
   }
 
+  get hasA11yNoAnimations() {
+    const htmlClasses = document.documentElement.classList;
+    return htmlClasses.contains('a11y-no-animations');
+  }
+
   restart() {
     const animationConfig = this.model.get('_animation');
     animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
@@ -225,12 +241,10 @@ export default class SvgView extends ComponentView {
   }
 
   checkVisua11y() {
-    const htmlClasses = document.documentElement.classList;
-    const shouldStopAnimations = htmlClasses.contains('a11y-no-animations');
-    if (!shouldStopAnimations && !this.isPausedWithVisua11y) return;
+    if (!this.hasA11yNoAnimations && !this.isPausedWithVisua11y) return;
 
     // Check if animation should start playing again
-    if (this.isPausedWithVisua11y && !shouldStopAnimations) {
+    if (this.isPausedWithVisua11y && !this.hasA11yNoAnimations) {
       this.isPausedWithVisua11y = false;
       this.restart();
       return;
