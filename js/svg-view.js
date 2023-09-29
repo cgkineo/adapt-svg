@@ -1,6 +1,7 @@
 import Adapt from 'core/js/adapt';
 import ComponentView from 'core/js/views/componentView';
 import Lottie from 'libraries/lottie.min';
+import documentModifications from 'core/js/DOMElementModifications';
 
 export default class SvgView extends ComponentView {
 
@@ -12,37 +13,64 @@ export default class SvgView extends ComponentView {
 
   preRender() {
     this.isPaused = null;
+    this.isPausedWithVisua11y = this.hasA11yNoAnimations;
     this.isInteracted = false;
     _.bindAll(this, 'checkIfOnScreen', 'onFail', 'onReady', 'onReducedMotionChange');
     this.update = _.throttle(this.update.bind(this), 17);
     this.isOnScreen = false;
     this.listenTo(Adapt, 'device:resize', this.onResize);
+    this.setUpOriginalValues();
+    this.resetToOriginalValues();
     this.checkIfResetOnRevisit();
   }
 
   postRender() {
     this.setUpAnimation();
+    this.setUpListeners();
+
     if (this.model.get('_setCompletionOn') !== 'inview') return;
     this.setupInviewCompletion();
   }
 
+  setUpOriginalValues() {
+    const animationConfig = this.model.get('_animation');
+    if (this.model.get('_originalShowPauseControl') === undefined) {
+      this.model.set('_originalShowPauseControl', animationConfig._showPauseControl);
+    }
+    if (this.model.get('_originalAutoPlay') === undefined) {
+      this.model.set('_originalAutoPlay', animationConfig._autoPlay);
+    }
+  }
+
+  resetToOriginalValues() {
+    if (this.isPausedWithVisua11y) { return; }
+
+    const animationConfig = this.model.get('_animation');
+    animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
+    animationConfig._autoPlay = this.model.get('_originalAutoPlay');
+  }
+
   setUpAnimation() {
-    const animation = this.model.get('_animation');
-    const src = animation._src;
-    const loop = animation._loops;
+    const animationConfig = this.model.get('_animation');
+    const src = animationConfig._src;
+    const loop = animationConfig._loops;
     const isSingleFile = /\.json/.test(src);
     this.animation = Lottie.loadAnimation({
       container: this.$('.svg__widget-aligner')[0],
-      renderer: animation._renderer || 'svg',
+      renderer: animationConfig._renderer || 'svg',
       loop: loop === -1 ? true : loop, // see https://github.com/airbnb/lottie-web/wiki/loadAnimation-options#loop-default-is-true
       autoplay: false, // we'll use checkIfOnScreen to control when playback starts
       path: isSingleFile ? src : src + '/data.json'
     });
+  }
+
+  setUpListeners() {
     this.animation.addEventListener('data_ready', this.onReady);
     this.animation.addEventListener('data_failed', this.onFail);
     this.animation.addEventListener('complete', this.update);
     this.animation.addEventListener('loopComplete', this.update);
     this.animation.addEventListener('enterFrame', this.update);
+    this.listenTo(documentModifications, 'changed:html', this.checkVisua11y);
   }
 
   onFail() {
@@ -63,7 +91,8 @@ export default class SvgView extends ComponentView {
   }
 
   onResize() {
-    if (this.model.get('_animation')._renderer !== 'svg') return;
+    const animationConfig = this.model.get('_animation');
+    if (animationConfig._renderer !== 'svg') return;
     const $svg = this.$('.svg__widget-aligner svg');
     const $aligner = this.$('.svg__widget-aligner');
     this.dimensions = this.dimensions || {
@@ -86,35 +115,34 @@ export default class SvgView extends ComponentView {
   }
 
   setUpReducedMotion() {
+    const animationConfig = this.model.get('_animation');
     if (!this.model.get('_isReducedMotionSupportEnabled')) return;
     if (!window.matchMedia) return;
     this._reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!this?._reducedMotionQuery?.addEventListener) return;
     this._reducedMotionQuery.addEventListener('change', this.onReducedMotionChange);
-    this.model.set('_originalAutoplay', this.model.get('_animation')._autoPlay);
+    this.model.set('_originalAutoplay', animationConfig._autoPlay);
     this.onReducedMotionChange();
   }
 
   onReducedMotionChange() {
     if (!this.animation) return;
     const isReducedMotion = (this.model.get('_isReducedMotionSupportEnabled') && this._reducedMotionQuery && this._reducedMotionQuery.matches);
-    const animation = this.model.get('_animation');
     if (isReducedMotion) {
-      animation._autoPlay = false;
-      this.model.set('_animation', animation);
-      this.animation.goToAndStop(this.animation.firstFrame + this.animation.totalFrames - 1, true);
-      this.update();
+      this.stopAtEnd();
       return;
     }
-    animation._autoPlay = this.model.get('_originalAutoplay');
-    this.model.set('_animation', animation);
+    const animationConfig = this.model.get('_animation');
+    animationConfig._autoPlay = this.model.get('_originalAutoplay');
+    this.model.set('_animation', animationConfig);
     const shouldAutoPlay = (!this.shouldCheckIfOnScreen() || this.isOnScreen);
     this.animation[shouldAutoPlay ? 'goToAndPlay' : 'goToAndStop'](this.animation.firstFrame, true);
     this.update();
   }
 
   shouldCheckIfOnScreen() {
-    return (this.model.get('_animation')._onScreenPercentInviewVertical > 0);
+    const animationConfig = this.model.get('_animation');
+    return (animationConfig._onScreenPercentInviewVertical > 0);
   }
 
   checkIfResetOnRevisit() {
@@ -125,20 +153,20 @@ export default class SvgView extends ComponentView {
 
   checkIfOnScreen (event, measurements) {
     if (!this.animation || !this.shouldCheckIfOnScreen()) return;
-    const animation = this.model.get('_animation');
-    const percentage = animation._onScreenPercentInviewVertical;
+    const animationConfig = this.model.get('_animation');
+    const percentage = animationConfig._onScreenPercentInviewVertical;
     this.isOnScreen = (measurements.percentInviewVertical >= percentage);
     if (this.isOnScreen) {
-      if (!animation._autoPlay || this.isInteracted) return;
+      if (!animationConfig._autoPlay || this.isInteracted) return;
       this.animation.play();
       this.update();
       return;
     }
-    if (animation._offScreenPause) {
+    if (animationConfig._offScreenPause) {
       this.animation.pause();
       this.update();
     }
-    if (animation._offScreenRewind) {
+    if (animationConfig._offScreenRewind) {
       this.animation.goToAndStop(this.animation.firstFrame, true);
       this.update();
     }
@@ -147,7 +175,8 @@ export default class SvgView extends ComponentView {
   onPlayPauseClick(event) {
     this.isInteracted = true;
     event.preventDefault();
-    if (!this.animation) return;
+    const animationConfig = this.model.get('_animation');
+    if (!this.animation || !animationConfig._showPauseControl) return;
     const isPaused = this.animation.isPaused;
     const isFinished = (this.animation.currentFrame === this.animation.totalFrames - 1);
     if (isPaused && isFinished) {
@@ -157,7 +186,7 @@ export default class SvgView extends ComponentView {
       this.animation.play();
     } else {
       this.animation.pause();
-      if (this.model.get('_animation')._onPauseRewind) {
+      if (animationConfig._onPauseRewind) {
         this.animation.stop();
         this.animation.goToAndStop(0);
       }
@@ -189,6 +218,51 @@ export default class SvgView extends ComponentView {
 
   shouldUpdate() {
     return (this.isPaused !== this.animation.isPaused);
+  }
+
+  get hasA11yNoAnimations() {
+    const htmlClasses = document.documentElement.classList;
+    return htmlClasses.contains('a11y-no-animations');
+  }
+
+  restart() {
+    const animationConfig = this.model.get('_animation');
+    animationConfig._showPauseControl = this.model.get('_originalShowPauseControl');
+    animationConfig._autoPlay = this.model.get('_originalAutoPlay');
+    this.toggleControls();
+    this.animation.goToAndPlay(0);
+    this.update();
+  }
+
+  stopAtEnd() {
+    const animationConfig = this.model.get('_animation');
+    animationConfig._autoPlay = false;
+    animationConfig._showPauseControl = false;
+    const lastFrame = this.animation.totalFrames - 1;
+    this.toggleControls();
+    this.animation.goToAndStop(lastFrame, true);
+    this.animation.pause();
+    this.update();
+  }
+
+  checkVisua11y() {
+    if (!this.hasA11yNoAnimations && !this.isPausedWithVisua11y) return;
+
+    // Check if animation should start playing again
+    if (this.isPausedWithVisua11y && !this.hasA11yNoAnimations) {
+      this.isPausedWithVisua11y = false;
+      this.restart();
+      return;
+    }
+
+    // Stop on last frame
+    this.isPausedWithVisua11y = true;
+    this.stopAtEnd();
+  }
+
+  toggleControls() {
+    const animationConfig = this.model.get('_animation');
+    this.$el.toggleClass('hide-controls', !animationConfig._showPauseControl);
   }
 
   remove() {
